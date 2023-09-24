@@ -1,30 +1,37 @@
 from passpilot.agent import Agent
-
+from passpilot.config import Config
 import difflib
 
 agent = Agent()
 
-URL = "https://accounts.douban.com/passport/login"
-agent.visit(URL)
+config = Config()
 
-html_before = agent.html()
+config.load('./douban.toml')
 
-agent.scroll_to("//input[@type='text']")
-agent.humanoid_type("//input[@type='phone']", "12233334444")
-agent.random_delay(1, 2)
-agent.humanoid_type("//input[@type='text']", "python")
-agent.random_delay(1, 2)
-agent.enter()
+agent.perform(config)
 
-html_after = agent.html()
+# URL = "https://accounts.douban.com/passport/login"
+# agent.visit(URL)
 
-diff = difflib.HtmlDiff(wrapcolumn=50).make_file(
-    html_before.splitlines(), html_after.splitlines(), context=True)
+# agent.random_delay(1, 2)
+# agent.click("//li[@class='account-tab-account']")
 
-with open("diff.html", "w") as f:
-    f.write(diff)
+# html_before = agent.html()
+# agent.humanoid_type("//input[@id='username']", "12233334444")
+# agent.random_delay(1, 2)
+# agent.humanoid_type("//input[@id='password']", "python")
+# agent.random_delay(1, 2)
+# agent.enter()
 
-# while True:
-#     pass
+# html_after = agent.html()
+
+# diff = difflib.HtmlDiff(wrapcolumn=50).make_file(
+#     html_before.splitlines(), html_after.splitlines(), context=True)
+
+# with open("diff.html", "w") as f:
+#     f.write(diff)
+
+while True:
+    pass
 
 agent.quit()
