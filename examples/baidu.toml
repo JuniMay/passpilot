@@ -1,0 +1,9 @@
+[site]
+url = "https://passport.baidu.com/"
+
+[fields]
+username = { xpath = "//input[@name='userName']", file='username.txt' }
+password = { xpath = "//input[@name='password']", file='password.txt' }
+
+[preactions]
+select = { xpath="//p[@title='用户名登录']", action = "click", seq=0 }

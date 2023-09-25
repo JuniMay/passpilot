@@ -107,6 +107,8 @@ class Agent:
                 # simplest
                 self.enter()
                 
+                self.delay(5)
+                
                 count += 1
                 
                 print("login count: ", count)
