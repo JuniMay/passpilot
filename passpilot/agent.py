@@ -70,12 +70,12 @@ class Agent:
     def detect_fatal_msg(self, diff: str) -> Optional[str]:
         soup = BeautifulSoup(diff, "html.parser")
         elements = soup.select(".diff_add")
-        
+
         user_msg = ""
-        
+
         for elem in elements:
             user_msg += str(elem)
-            
+
         # print(user_msg)
 
         prompt = [
@@ -89,31 +89,30 @@ class Agent:
             },
             {
                 "role": "user",
-                "content": r"<class xxxxxxxxxxxx xxx='xxx' xxxxxxx='xxxxx>密码错误</class>"
+                "content": r"HTML如下：<class xxxxxxxxxxxx xxx='xxx' xxxxxxx='xxxxx>密码错误</class>"
             },
             {
                 "role": "assistant",
-                "content": r"fatal_msg=`密码错误`"
+                "content": r"结果为：fatal_msg=`密码错误`"
             },
             {
                 "role": "user",
-                "content": user_msg
+                "content": f'HTML 如下：{user_msg}'
             }
         ]
-        
+
         response = zhipuai.model_api.invoke(
             model="chatglm_pro",
             prompt=prompt,
             temperature=0.0,
             top_p=0.75,
         )
-        
+
         if response['success']:
             return response['data']['choices'][0]['content']
         else:
             print(response)
             return None
-            
 
     def perform(self, config: Config):
 
@@ -123,7 +122,6 @@ class Agent:
         preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
 
         print(preactions)
-        html_before = self.html()
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
         password_xpath = config.data['fields']['password']['xpath']
@@ -161,19 +159,24 @@ class Agent:
                 self.random_delay(1, 2)
                 self.humanoid_type(password_xpath, password)
 
+                html_before = self.html()
+
                 # simplest
                 self.enter()
 
                 self.delay(5)
                 html_after = self.html()
-                
+
                 diff = self.diff_html(html_before, html_after)
                 fatal_msg = self.detect_fatal_msg(diff)
                 count += 1
-                
+
+                with open("diff.html", "w") as f:
+                    f.write(diff)
+
                 if fatal_msg:
                     print(f"[!]login count: {count}, fatal_msg: {fatal_msg}")
                     break
                 else:
-                    print(f"[!]login count: {count}, failed to detect fatal msg.")
-
+                    print(
+                        f"[!]login count: {count}, failed to detect fatal msg.")
