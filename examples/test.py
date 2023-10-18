@@ -1,5 +1,6 @@
-from passpilot.agent import Agent
+
 from passpilot.config import Config
+from passpilot.agent import Agent
 from argparse import ArgumentParser
 
 argparser = ArgumentParser()

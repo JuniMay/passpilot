@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-
+from .recognizer import recognizer
 from time import sleep
 import random
 
@@ -65,7 +65,7 @@ class Agent:
         preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
         
         print(preactions)
-                
+        html_before=self.html()
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
         password_xpath = config.data['fields']['password']['xpath']
@@ -108,8 +108,11 @@ class Agent:
                 self.enter()
                 
                 self.delay(5)
-                
+                html_after=self.html()
+                r=recognizer(html_after,html_before)
+                r.html_diff()
+                fatalMsg=r.detectFatalMsg(r.html_diff)
                 count += 1
                 
-                print("login count: ", count)
+                print("[!]login count: ", count,"\tFatalMsg:",fatalMsg)
             
