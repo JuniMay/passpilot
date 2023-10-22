@@ -109,7 +109,7 @@ class Agent:
             {
                 "role": "user",
 
-                "content": r"HTML如下：<class xxxxxxxxxxxx xxx='xxx' xxxxxxx='xxxxx>密码错误</class>"
+               "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
 
             },
             {
