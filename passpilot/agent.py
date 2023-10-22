@@ -84,17 +84,27 @@ class Agent:
 
     def detect_fatal_msg(self, diff: str) -> Optional[str]:
         soup = BeautifulSoup(diff, "html.parser")
+<<<<<<< HEAD
 
         ele_error=set(soup.find_all(text=re.compile("error")))
         ele_chg=set(soup.select(".diff_chg"))
         ele_add=set(soup.select(".diff_added"))
         elements=ele_error|ele_chg|ele_add
+=======
+        elements = soup.select(".diff_add")
+
+>>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
         user_msg = ""
-        
+
         for elem in elements:
             user_msg += str(elem)
+<<<<<<< HEAD
             
         #print("[[]]",user_msg)
+=======
+
+        # print(user_msg)
+>>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
 
         prompt = [
             {
@@ -107,33 +117,39 @@ class Agent:
             },
             {
                 "role": "user",
+<<<<<<< HEAD
                 "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
+=======
+                "content": r"HTML如下：<class xxxxxxxxxxxx xxx='xxx' xxxxxxx='xxxxx>密码错误</class>"
+>>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
             },
             {
                 "role": "assistant",
-                "content": r"fatal_msg=`密码错误`"
+                "content": r"结果为：fatal_msg=`密码错误`"
             },
             {
                 "role": "user",
-                "content": user_msg
+                "content": f'HTML 如下：{user_msg}'
             }
         ]
 
+<<<<<<< HEAD
         print(user_msg)
         
+=======
+>>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
         response = zhipuai.model_api.invoke(
             model="chatglm_pro",
             prompt=prompt,
             temperature=0.0,
             top_p=0.75,
         )
-        
+
         if response['success']:
             return response['data']['choices'][0]['content']
         else:
             print(response)
             return None
-            
 
     def perform(self, config: Config):
 
@@ -143,7 +159,10 @@ class Agent:
         preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
 
         print(preactions)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
         password_xpath = config.data['fields']['password']['xpath']
@@ -180,7 +199,13 @@ class Agent:
                 self.humanoid_type(username_xpath, username)
                 self.random_delay(1, 2)
                 self.humanoid_type(password_xpath, password)
+<<<<<<< HEAD
                 html_before = self.html()
+=======
+
+                html_before = self.html()
+
+>>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
                 # simplest
                 self.enter()
 
@@ -192,10 +217,13 @@ class Agent:
                     f.write(diff)
                 fatal_msg = self.detect_fatal_msg(diff)
                 count += 1
-                
+
+                with open("diff.html", "w") as f:
+                    f.write(diff)
+
                 if fatal_msg:
                     print(f"[!]login count: {count}, fatal_msg: {fatal_msg}")
                     break
                 else:
-                    print(f"[!]login count: {count}, failed to detect fatal msg.")
-
+                    print(
+                        f"[!]login count: {count}, failed to detect fatal msg.")
