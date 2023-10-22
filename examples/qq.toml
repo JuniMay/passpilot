@@ -7,3 +7,7 @@ password = { xpath = "//*[@id='p']", file='password.txt' }
 
 [preactions]
 select = { xpath="//*[@id='switcher_plogin']", action = "click", seq=0 }
+
+[options]
+broswer='Chrome'
+user-agent="user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4389.82 Safari/537.36')"

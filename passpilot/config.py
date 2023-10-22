@@ -6,5 +6,5 @@ class Config:
         self.data: Dict = {}
     
     def load(self, path: str) -> None:
-        with open(path, "r") as f:
+        with open(path, "r",encoding='utf-8') as f:
             self.data = toml.load(f)

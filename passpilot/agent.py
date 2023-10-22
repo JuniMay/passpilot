@@ -1,6 +1,6 @@
 
 from typing import Dict, Any, List, Optional
-
+from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -8,7 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from time import sleep
 from difflib import HtmlDiff
 from bs4 import BeautifulSoup
-
+import re
 import random
 import zhipuai
 
@@ -16,11 +16,26 @@ from passpilot.config import Config
 
 
 class Agent:
-    def __init__(self) -> None:
-        self.driver = webdriver.Chrome()
+    def __init__(self,broswer:str,options:str) -> None:
+        self.options=None
+        if broswer==None:
+            broswer="Chrome"
+        self.set_fingers(options)
+        if broswer=="Chrome":
+            self.driver = webdriver.Chrome(options=self.options)
+            return
+        if broswer=="Firefox":
+            self.driver = webdriver.Firefox()
+
 
     def visit(self, url: str) -> None:
         self.driver.get(url)
+
+    def set_fingers(self,option:str)->None:
+        #user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.4389.82 Safari/537.36')
+        self.options=Options()
+        self.options.add_argument(option)
+        return
 
     def html(self) -> str:
         return self.driver.page_source
@@ -69,19 +84,22 @@ class Agent:
 
     def detect_fatal_msg(self, diff: str) -> Optional[str]:
         soup = BeautifulSoup(diff, "html.parser")
-        elements = soup.select(".diff_add")
-        
+
+        ele_error=set(soup.find_all(text=re.compile("error")))
+        ele_chg=set(soup.select(".diff_chg"))
+        ele_add=set(soup.select(".diff_added"))
+        elements=ele_error|ele_chg|ele_add
         user_msg = ""
         
         for elem in elements:
             user_msg += str(elem)
             
-        # print(user_msg)
+        #print("[[]]",user_msg)
 
         prompt = [
             {
                 "role": "user",
-                "content": r"你是一个 HTML 登陆提示信息提取器，会高精度检测 HTML 内容中可能是登陆提示信息的元素，并且以 `fatal_msg=<message>` 的格式输出而不包含任何冗余信息。"
+                "content": r"你是一个 HTML 登陆提示信息提取器，会高精度检测 HTML 内容中可能是登陆失败提示信息的元素，并且以 `fatal_msg=<message>` 的格式输出而不包含任何冗余信息。"
             },
             {
                 "role": "assistant",
@@ -89,7 +107,7 @@ class Agent:
             },
             {
                 "role": "user",
-                "content": r"<class xxxxxxxxxxxx xxx='xxx' xxxxxxx='xxxxx>密码错误</class>"
+                "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
             },
             {
                 "role": "assistant",
@@ -100,6 +118,8 @@ class Agent:
                 "content": user_msg
             }
         ]
+
+        print(user_msg)
         
         response = zhipuai.model_api.invoke(
             model="chatglm_pro",
@@ -123,7 +143,7 @@ class Agent:
         preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
 
         print(preactions)
-        html_before = self.html()
+
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
         password_xpath = config.data['fields']['password']['xpath']
@@ -160,14 +180,16 @@ class Agent:
                 self.humanoid_type(username_xpath, username)
                 self.random_delay(1, 2)
                 self.humanoid_type(password_xpath, password)
-
+                html_before = self.html()
                 # simplest
                 self.enter()
 
                 self.delay(5)
                 html_after = self.html()
-                
+
                 diff = self.diff_html(html_before, html_after)
+                with open('dif.html','w',encoding='utf-8') as f:
+                    f.write(diff)
                 fatal_msg = self.detect_fatal_msg(diff)
                 count += 1
                 
