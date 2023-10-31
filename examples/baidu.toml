@@ -9,5 +9,5 @@ password = { xpath = "//input[@name='password']", file='password.txt' }
 select = { xpath="//p[@title='用户名登录']", action = "click", seq=0 }
 
 [options]
-broswer='Chrome'
-user-agent="user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4389.82 Safari/537.36')"
+broswer='Firefox'
+user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0"

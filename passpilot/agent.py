@@ -14,29 +14,40 @@ import zhipuai
 
 from passpilot.config import Config
 
-
 class Agent:
-    def __init__(self,broswer:str,options:str) -> None:
+    def __init__(self,config:Config) -> None:
         self.options=None
-        if broswer==None:
-            broswer="Chrome"
-        self.set_fingers(options)
-        if broswer=="Chrome":
+        self.broswer=config.data['options']['broswer']
+        if self.broswer==None:
+            self.broswer="Chrome"
+
+
+        self.set_fingers(config)
+        if self.broswer=='Chrome' :
             self.driver = webdriver.Chrome(options=self.options)
-            return
-        if broswer=="Firefox":
-            self.driver = webdriver.Firefox()
+        if self.broswer=="Firefox":
+            self.driver = webdriver.Firefox(options=self.options)
 
 
     def visit(self, url: str) -> None:
         self.driver.get(url)
+    def set_fingers(self,config:Config)->None:
+        if self.broswer=="Chrome":
+            self.options=webdriver.ChromeOptions()
+        if self.broswer=="Firefox":
+            self.options=webdriver.FirefoxOptions()
+        op=config.data['options']
+        if 'user-agent' in op and not(op['user-agent']==""):
+            ua="--user-agent="+op['user-agent']
+            self.options.add_argument(ua)
 
-    def set_fingers(self,option:str)->None:
-        #user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.4389.82 Safari/537.36')
-        self.options=Options()
-        self.options.add_argument(option)
+        else:
+            return
         return
-
+    def MultiIP_login(self)->None:
+        pass
+    def solve_captcha(self)->None:
+        pass
     def html(self) -> str:
         return self.driver.page_source
 
@@ -80,31 +91,28 @@ class Agent:
         return HtmlDiff().make_file(before.splitlines(), after.splitlines(), context=True)
 
     def check_captcha(self, html: str) -> None:
+        # check if there is captcha or not and return the type of the captcha
         pass
 
     def detect_fatal_msg(self, diff: str) -> Optional[str]:
         soup = BeautifulSoup(diff, "html.parser")
-<<<<<<< HEAD
+
 
         ele_error=set(soup.find_all(text=re.compile("error")))
         ele_chg=set(soup.select(".diff_chg"))
         ele_add=set(soup.select(".diff_added"))
         elements=ele_error|ele_chg|ele_add
-=======
         elements = soup.select(".diff_add")
 
->>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
+
         user_msg = ""
 
         for elem in elements:
             user_msg += str(elem)
-<<<<<<< HEAD
-            
-        #print("[[]]",user_msg)
-=======
+
 
         # print(user_msg)
->>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
+
 
         prompt = [
             {
@@ -117,11 +125,10 @@ class Agent:
             },
             {
                 "role": "user",
-<<<<<<< HEAD
+
                 "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
-=======
-                "content": r"HTML如下：<class xxxxxxxxxxxx xxx='xxx' xxxxxxx='xxxxx>密码错误</class>"
->>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
+
+
             },
             {
                 "role": "assistant",
@@ -133,11 +140,7 @@ class Agent:
             }
         ]
 
-<<<<<<< HEAD
-        print(user_msg)
-        
-=======
->>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
+
         response = zhipuai.model_api.invoke(
             model="chatglm_pro",
             prompt=prompt,
@@ -159,10 +162,7 @@ class Agent:
         preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
 
         print(preactions)
-<<<<<<< HEAD
 
-=======
->>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
         password_xpath = config.data['fields']['password']['xpath']
@@ -199,13 +199,9 @@ class Agent:
                 self.humanoid_type(username_xpath, username)
                 self.random_delay(1, 2)
                 self.humanoid_type(password_xpath, password)
-<<<<<<< HEAD
-                html_before = self.html()
-=======
 
                 html_before = self.html()
 
->>>>>>> 7eed1fd97bcadea8a818f6396fe1503620e6a0b7
                 # simplest
                 self.enter()
 

@@ -1,0 +1,13 @@
+[site]
+url = "https://wappass.baidu.com/passport/?login&tpl=wise&sms=1&regtype=1&u=https%3A%2F%2Fwww.baidu.com%2F&extrajson=%7b%22src%22%3a%22se_000000%22%7d#/insert_account"
+
+[fields]
+username = { xpath = "//input[@name='userName']", file='username.txt' }
+password = { xpath = "//input[@name='password']", file='password.txt' }
+
+[preactions]
+select = { xpath="//p[@title='用户名登录']", action = "click", seq=0 }
+
+[options]
+broswer='Chrome'
+user-agent="Mozilla/5.0 (Linux; Android 11; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36"

@@ -17,7 +17,7 @@ zhipuai.api_key = args.api_key
 config = Config()
 config.load(args.config)
 print(config.data)
-agent = Agent(broswer=config.data['options']['broswer'],options=config.data['options']['user-agent'])
+agent = Agent(config)
 agent.perform(config)
 
 while True:
