@@ -27,8 +27,6 @@ class Agent:
             self.driver = webdriver.Chrome(options=self.options)
         if self.broswer=="Firefox":
             self.driver = webdriver.Firefox(options=self.options)
-
-
     def visit(self, url: str) -> None:
         self.driver.get(url)
     def set_fingers(self,config:Config)->None:
@@ -97,21 +95,16 @@ class Agent:
     def detect_fatal_msg(self, diff: str) -> Optional[str]:
         soup = BeautifulSoup(diff, "html.parser")
 
-
         ele_error=set(soup.find_all(text=re.compile("error")))
         ele_chg=set(soup.select(".diff_chg"))
         ele_add=set(soup.select(".diff_added"))
         elements=ele_error|ele_chg|ele_add
         elements = soup.select(".diff_add")
 
-
         user_msg = ""
 
         for elem in elements:
             user_msg += str(elem)
-
-
-        # print(user_msg)
 
 
         prompt = [
@@ -126,8 +119,8 @@ class Agent:
             {
                 "role": "user",
 
-                "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
 
+               "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
 
             },
             {
