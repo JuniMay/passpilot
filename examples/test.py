@@ -2,16 +2,20 @@
 from passpilot.config import Config
 from passpilot.agent import Agent
 from argparse import ArgumentParser
-
-import zhipuai
+import os
+import openai
 
 argparser = ArgumentParser()
 argparser.add_argument("-c", "--config", help="config file path")
-argparser.add_argument("-k", "--api-key", help="api key for zhipuai")
+argparser.add_argument("-k", "--api-key", help="api key for openai")
 
 args = argparser.parse_args()
+print(args.api_key,os.getenv("OPENAI_API_KEY"))
+if args.api_key!=None:
+    openai.api_key = args.api_key
+else:
+    openai.api_key=os.getenv("OPENAI_API_KEY")
 
-zhipuai.api_key = args.api_key
 
 
 config = Config()

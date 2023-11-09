@@ -1,6 +1,5 @@
 
 from typing import Dict, Any, List, Optional
-from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -10,7 +9,7 @@ from difflib import HtmlDiff
 from bs4 import BeautifulSoup
 import re
 import random
-import zhipuai
+import openai
 
 from passpilot.config import Config
 
@@ -27,6 +26,8 @@ class Agent:
             self.driver = webdriver.Chrome(options=self.options)
         if self.broswer=="Firefox":
             self.driver = webdriver.Firefox(options=self.options)
+        if self.broswer=="Edge":
+            self.driver = webdriver.Edge(options=self.options)
     def visit(self, url: str) -> None:
         self.driver.get(url)
     def set_fingers(self,config:Config)->None:
@@ -34,11 +35,12 @@ class Agent:
             self.options=webdriver.ChromeOptions()
         if self.broswer=="Firefox":
             self.options=webdriver.FirefoxOptions()
+        if self.broswer=="Edge":
+            self.options=webdriver.EdgeOptions()
         op=config.data['options']
         if 'user-agent' in op and not(op['user-agent']==""):
             ua="--user-agent="+op['user-agent']
             self.options.add_argument(ua)
-
         else:
             return
         return
@@ -105,44 +107,22 @@ class Agent:
 
         for elem in elements:
             user_msg += str(elem)
+        # print(user_msg)
 
-
-        prompt = [
-            {
-                "role": "user",
-                "content": r"你是一个 HTML 登陆提示信息提取器，会高精度检测 HTML 内容中可能是登陆失败提示信息的元素，并且以 `fatal_msg=<message>` 的格式输出而不包含任何冗余信息。"
-            },
-            {
-                "role": "assistant",
-                "content": "好的，我明白。"
-            },
-            {
-                "role": "user",
-
-
-               "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"
-
-            },
-            {
-                "role": "assistant",
-                "content": r"结果为：fatal_msg=`密码错误`"
-            },
-            {
-                "role": "user",
-                "content": f'HTML 如下：{user_msg}'
-            }
-        ]
-
-
-        response = zhipuai.model_api.invoke(
-            model="chatglm_pro",
-            prompt=prompt,
-            temperature=0.0,
-            top_p=0.75,
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo-16k",
+            messages=[
+                {"role": "user",
+                 "content": r"你是一个 HTML 登陆提示信息提取器，会高精度检测 HTML 内容中可能是登陆失败提示信息的元素，并且以 `fatal_msg=<message>` 的格式输出而不包含任何冗余信息。"},
+                {"role": "assistant", "content": "好的，我明白。"},
+                {"role": "user", "content": r"<class xxxxxxxxxerror xxx='xxxerrorxxx' xxxxxxx='xxxxx>密码错误</class>"},
+                {"role": "assistant", "content": r"结果为：fatal_msg=`密码错误`"},
+                {"role": "user", "content": f'HTML 如下：{user_msg}'}
+            ],
+            temperature=0
         )
-
-        if response['success']:
-            return response['data']['choices'][0]['content']
+        if response['usage']:
+            return response.choices[0].message.content
         else:
             print(response)
             return None
@@ -150,11 +130,9 @@ class Agent:
     def perform(self, config: Config):
 
         preactions: Dict[str, Dict[str, Any]] = config.data['preactions']
-
+        print(preactions)
         # sort preactions
         preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
-
-        print(preactions)
 
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
@@ -174,13 +152,10 @@ class Agent:
 
         for username in usernames:
             for password in passwords:
-
                 self.visit(config.data['site']['url'])
-
                 for name, preaction in preactions:
                     xpath = preaction['xpath']
                     action = preaction['action']
-
                     if action == 'click':
                         self.random_delay(1, 2)
                         self.click(xpath)
@@ -197,8 +172,8 @@ class Agent:
 
                 # simplest
                 self.enter()
-
-                self.delay(5)
+                #Here is for solving the  captcha
+                self.delay(10)
                 html_after = self.html()
 
                 diff = self.diff_html(html_before, html_after)

@@ -1,0 +1,12 @@
+[site]
+url ="https://www.facebook.com/login/"
+[fields]
+username = { xpath = "/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[1]/input", file='username.txt' }
+password = { xpath = "/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[2]/div/div/input", file='password.txt' }
+
+[preactions]
+
+
+[options]
+broswer='Chrome'
+user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0"

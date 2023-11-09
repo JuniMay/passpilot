@@ -6,7 +6,8 @@ username = { xpath = "//input[@id='username']", file='username.txt' }
 password = { xpath = "//input[@id='password']", file='password.txt' }
 
 [preactions]
-select_tab = { xpath="//li[@class='account-tab-account']", action = "click", seq=0 }
+#TODO
+select_tab = { xpath="/html/body/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div/form/div[1]/div[1]/div[1]/div/div[1]/input", action = "click", seq=0 }
 
 [options]
 broswer='Firefox'

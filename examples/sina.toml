@@ -1,0 +1,13 @@
+[site]
+url ="https://login.sina.com.cn/signup/signin.php?entry=blog&r=https%3A%2F%2Fi.blog.sina.com.cn%2Fblog_rebuild%2Fprofile%2Fcontrollers%2Fnotelist.php%3Faction%3Dprofilenotice&from=referer:https%3A%2F%2Fi.blog.sina.com.cn%2Fblog_rebuild%2Fprofile%2Fcontrollers%2Fnotelist.php%3Faction%3Dprofilenotice"
+
+[fields]
+username = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[1]/input[2]", file='username.txt' }
+password = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[2]/input", file='password.txt' }
+
+[preactions]
+
+
+[options]
+broswer='Chrome'
+user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0"

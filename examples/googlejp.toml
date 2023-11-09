@@ -1,0 +1,12 @@
+[site]
+url ="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fwww.google.com%2F&ec=GAZAmgQ&hl=ja&ifkv=AVQVeyz3ngywe_OyVlk8D9DIHGTVY3z0Q9n0evnpys5J1IlN63yLIiyw9-51UlX6DPBYL9rKa4vIYg&passive=true&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-805127945%3A1699409451806757&theme=glif%27"
+[fields]
+username = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[1]/input[2]", file='username.txt' }
+password = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[2]/input", file='password.txt' }
+
+[preactions]
+
+
+[options]
+broswer='Chrome'
+user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0"
