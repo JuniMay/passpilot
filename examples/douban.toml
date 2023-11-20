@@ -5,8 +5,10 @@ url = "https://accounts.douban.com/passport/login"
 username = { xpath = "//input[@id='username']", file='username.txt' }
 password = { xpath = "//input[@id='password']", file='password.txt' }
 
-[preactions]
+[actions]
 select_tab = { xpath="//li[@class='account-tab-account']", action = "click", seq=0 }
+type_username= {xpath="//input[@id='username']",action="type",form="id",seq=1}
+type_password={xpath="//input[@id='password']",action="type",form="password",seq=2}
 
 
 [options]

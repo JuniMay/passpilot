@@ -5,9 +5,10 @@ url = "https://passport.baidu.com/v2/?login"
 username = { xpath = "//input[@name='userName']", file='username.txt' }
 password = { xpath = "//input[@name='password']", file='password.txt' }
 
-[preactions]
+[actions]
 select = { xpath="//p[@title='用户名登录']", action = "click", seq=0 }
-
+type_username={xpath = "//input[@name='userName']",action='type',form='id',seq=1}
+type_password={xpath="//input[@name='password']",action="type",form="password",seq=2}
 [options]
 broswer='Chrome'
-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0"
+user-agent="Mozilla/5.0 (Windows NT 999.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0"

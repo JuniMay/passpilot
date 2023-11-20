@@ -1,0 +1,43 @@
+1700446017690	geckodriver	INFO	Listening on 127.0.0.1:53842
+1700446019910	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--user-agent=Mozilla/5.0 (Linux; Android 6 ... " "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\rust_mozprofile73IsQ1"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1700446020293	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-user-agent"
+1700446020434	Marionette	INFO	Listening on port 53852
+WebDriver BiDi listening on ws://127.0.0.1:53843
+Read port: 53852
+1700446020512	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+DevTools listening on ws://127.0.0.1:53843/devtools/browser/de08da88-1579-4a2b-9823-61acf27453fc
+1700446034507	Marionette	INFO	Stopped listening on port 53852
+Dynamically enable window occlusion 1
+1700446585742	geckodriver	INFO	Listening on 127.0.0.1:54256
+1700446588797	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--user-agent=Mozilla/5.0 (Linux; Android 6 ... " "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\rust_mozprofileDsbvX2"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1700446589120	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-user-agent"
+1700446589241	Marionette	INFO	Listening on port 54265
+WebDriver BiDi listening on ws://127.0.0.1:54257
+Read port: 54265
+1700446589441	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+DevTools listening on ws://127.0.0.1:54257/devtools/browser/80863cf3-6205-40bb-bcbc-3dc9a5551844
+1700446607526	Marionette	INFO	Stopped listening on port 54265
+Dynamically enable window occlusion 1
+1700447031926	geckodriver	INFO	Listening on 127.0.0.1:54478
+1700447034965	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--user-agent=Mozilla/5.0 (Linux; Android 6 ... " "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\rust_mozprofile1u0GjL"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1700447035288	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+console.error: "Warning: unrecognized command line flag" "-user-agent"
+1700447035409	Marionette	INFO	Listening on port 54486
+WebDriver BiDi listening on ws://127.0.0.1:54479
+Read port: 54486
+1700447035605	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+DevTools listening on ws://127.0.0.1:54479/devtools/browser/960af39e-1fac-481f-a382-f04da36f8b8d
+1700447067695	addons.xpi	ERROR	System addon update list error SyntaxError: XMLHttpRequest.open: 'http://%(server)s/dummy-system-addons.xml' is not a valid URL.
+1700447083986	Marionette	INFO	Stopped listening on port 54486
+Dynamically enable window occlusion 1

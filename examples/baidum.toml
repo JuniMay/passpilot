@@ -5,8 +5,10 @@ url = "https://wappass.baidu.com/passport/?login&tpl=wise&sms=1&regtype=1&u=http
 username = { xpath = "//input[@name='userName']", file='username.txt' }
 password = { xpath = "//input[@name='password']", file='password.txt' }
 
-[preactions]
-select = { xpath="//p[@title='用户名登录']", action = "click", seq=0 }
+[actions]
+select_tab = { xpath="//p[@title='用户名登录']", action = "click", seq=0 }
+type_username={xpath = "//input[@name='userName']",action='type',form='id',seq=1}
+type_password={xpath="//input[@name='password']",action="type",form="password",seq=2}
 
 [options]
 broswer='Chrome'

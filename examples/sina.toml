@@ -5,8 +5,9 @@ url ="https://login.sina.com.cn/signup/signin.php?entry=blog&r=https%3A%2F%2Fi.b
 username = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[1]/input[2]", file='username.txt' }
 password = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[2]/input", file='password.txt' }
 
-[preactions]
-
+[actions]
+type_username= {xpath="/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[1]/input[2]",action="type",form="id",seq=0}
+type_password={xpath="/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[2]/inputt",action="type",form="pw",seq=1}
 
 [options]
 broswer='Chrome'

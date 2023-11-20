@@ -5,10 +5,11 @@ url = "https://xui.ptlogin2.qq.com/cgi-bin/xlogin?appid=716027609&daid=383&style
 username = { xpath = "//*[@id='u']", file='username.txt' }
 password = { xpath = "//*[@id='p']", file='password.txt' }
 
-[preactions]
+[actions]
 select = { xpath="//*[@id='switcher_plogin']", action = "click", seq=0 }
+type_username= {xpath="//*[@id='u']",action="type",form="id",seq=1}
+type_password={xpath="//*[@id='p']",action="type",form="pw",seq=2}
 
 [options]
-device='PC'
 broswer='Chrome'
 user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"

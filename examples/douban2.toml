@@ -5,10 +5,10 @@ url = "https://accounts.douban.com/passport/login"
 username = { xpath = "//input[@id='username']", file='username.txt' }
 password = { xpath = "//input[@id='password']", file='password.txt' }
 
-[preactions]
-#TODO
-select_tab = { xpath="/html/body/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div/form/div[1]/div[1]/div[1]/div/div[1]/input", action = "click", seq=0 }
-
+[actions]
+select_tab = { xpath="/html/body/div[1]/div[2]/div[2]/div/div[1]/ul[1]/li[2]", action = "click", seq=0 }
+type_username= {xpath="//input[@id='username']",action="type",form="id",seq=1}
+type_password={xpath="//input[@id='password']",action="type",form="password",seq=2}
 [options]
 broswer='Firefox'
 user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4389.82 Safari/537.36')"

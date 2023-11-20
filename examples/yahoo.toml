@@ -1,11 +1,14 @@
 [site]
-url ="https://login.sina.com.cn/signup/signin.php?entry=blog&r=https%3A%2F%2Fi.blog.sina.com.cn%2Fblog_rebuild%2Fprofile%2Fcontrollers%2Fnotelist.php%3Faction%3Dprofilenotice&from=referer:https%3A%2F%2Fi.blog.sina.com.cn%2Fblog_rebuild%2Fprofile%2Fcontrollers%2Fnotelist.php%3Faction%3Dprofilenotice"
-
+url ="https://login.yahoo.co.jp/config/login?.src=www&.done=https%3A%2F%2Faccounts.yahoo.co.jp%2Fprofile%3F.done%3Dhttps%253A%252F%252Fwww.yahoo.co.jp%252F%253F.src%253Dwww%2526t_cushion%253D1"
 [fields]
 username = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[1]/input[2]", file='username.txt' }
 password = { xpath = "/html/body/div[1]/div/div[2]/div[2]/form/div[2]/div/ul/li[2]/input", file='password.txt' }
 
-[preactions]
+[actions]
+type_username= {xpath="/html/body/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div/form/div[1]/div[1]/div[1]/div/div[1]/input",action="type",form="username",seq=0}
+select_next={xpath="/html/body/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div/form/div[1]/div[1]/div[2]/div/button",action="click",seq=1}
+type_password={xpath="/html/body/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div/form/div[2]/div/div[1]/div[2]/div[2]/div/div[1]/input",action="type",form="password",seq=2}
+
 
 
 [options]

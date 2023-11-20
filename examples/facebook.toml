@@ -4,8 +4,9 @@ url ="https://www.facebook.com/login/"
 username = { xpath = "/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[1]/input", file='username.txt' }
 password = { xpath = "/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[2]/div/div/input", file='password.txt' }
 
-[preactions]
-
+[actions]
+type_username= {xpath="/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[1]/input",action="type",form="id",seq=0}
+type_password={xpath="/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[2]/div/div/input",action="type",form="pw",seq=1}
 
 [options]
 broswer='Chrome'
