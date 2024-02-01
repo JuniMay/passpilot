@@ -1,99 +1,220 @@
-
+import base64
+import datetime
 from typing import Dict, Any, List, Optional
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
+
 from time import sleep
 from difflib import HtmlDiff
 from bs4 import BeautifulSoup
-import re
-import random
+import re,os,random
 import openai
+from passpilot.driver import driver
 
 from passpilot.config import Config
+CHROME="Chrome"
+FIREFOX="Firefox"
 
+def encode_image(image_path:str):
+    with open(image_path,"rb") as image_file:
+        return base64.b64encode((image_file.read())).decode('utf-8')
 class Agent:
-    def __init__(self,config:Config) -> None:
-        self.options=None
-        self.broswer=config.data['options']['broswer']
-        if self.broswer==None:
-            self.broswer="Chrome"
+    _caller_prefix="Agent"
+    _compatible_browsers=[CHROME]
+    _browser_instance_type=None # The used browser now
+    _option=None
+    _base_config={
+        "browser":{
+            "enabled":True
+        },
+        "proxy":{
+            "enabled":False,
+            "ip":None,
+            "port":None
+        },
+        "user_agent":{
+            "enabled":False,
+            'engine':"Mozilla/5.0",
+            "os":"(Windows NT 10.0; Win64; x64)",
+            "Webkit":"AppleWebKit/537.36",
+            "KHTML":"(KHTML, like Gecko)",
+            "browser":"Chrome/120.0.6099.227 Safari/537.36"
+        },
+        "others":{
+            "headless":False,
+
+        },
+       "Agent":{
+           "first_shot_url":'https://www.baidu.com',
+           "timeout":10, #10 seconds
+           "first_shot_max_time":3,
+           "scripts":"",
+           "scripts_after_load":""
+       }
+    }
+    _arg_mappings = {
+        "no_ssl_errors": ["--ignore-certificate-errors"],
+        "disable_notifications": ["--disable-notifications"],
+        "maximized": ["--start-maximized"],
+        "no_default_browser_check": ["--no-default-browser-check"],
+        "headless": ["--headless"],
+        "user-agent":["--user-agent=__USER_AGENT__"],
+        "proxy":["--proxy-server=__PROXY__"]
+    }
+
+    @classmethod
+    def launch(cls,**kwargs):
+        for arg in kwargs:
+            if arg in Agent._compatible_browsers and kwargs[arg]:
+                Agent._browser_instance_type=arg
+                break
+            if not Agent._browser_instance_type:
+                raise Exception("We need a specify browser in".join(Agent._compatible_browsers))
+
+        # from driver import driver
+        #load driver instance
+        webdriver_constructor=None
+        cls._option=None
+        webagent_instance=None
+        webdriver_constructor=driver
+        #have a shot to launch the driver
+        try_times=0
+        while try_times<Agent._base_config['Agent']["first_shot_max_time"]:
+            try:
+                if Agent._browser_instance_type == CHROME:
+                    webagent_instance=webdriver_constructor(Chrome=1,options=cls._option)
+                if Agent._browser_instance_type==FIREFOX:
+                    webagent_instance = webdriver_constructor(FIRFOX=1,options=cls._option)
+
+                if not cls.first_shot(webagent_instance):
+                    webagent_instance.quit()
+                    #raise Exception("Failed to launch! ")
+                else:
+                    #webagent_instance.quit()  delete this line or get error "ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it"
+                    webagent_instance.set_config(cls._base_config)
+                    print("Successful start!")
+                    break
+            except Exception as e:
+                try_times+=1
+                if try_times<Agent._base_config['Agent']['first_shot_max_time']:
+                    continue
+                else:
+                    raise Exception("Agent cannot work,please check")
+        #Configure
 
 
-        self.set_fingers(config)
-        if self.broswer=='Chrome' :
-            self.driver = webdriver.Chrome(options=self.options)
-        if self.broswer=="Firefox":
-            self.driver = webdriver.Firefox(options=self.options)
-        if self.broswer=="Edge":
-            self.driver = webdriver.Edge(options=self.options)
-    def visit(self, url: str) -> None:
-        self.driver.get(url)
-    def set_fingers(self,config:Config)->None:
-        if self.broswer=="Chrome":
-            self.options=webdriver.ChromeOptions()
-        if self.broswer=="Firefox":
-            self.options=webdriver.FirefoxOptions()
-        if self.broswer=="Edge":
-            self.options=webdriver.EdgeOptions()
-        op=config.data['options']
-        if 'user-agent' in op and not(op['user-agent']==""):
-            ua="--user-agent="+op['user-agent']
-            self.options.add_argument(ua)
-        else:
-            return
-        return
-    def MultiIP_login(self)->None:
+        #Restore
+        cls.flush()
+        res=webagent_instance
+        return res
+    @classmethod
+    def first_shot(cls,webagent)->bool:
+        '''
+        :return: Whether the first shot was successful or not
+        '''
+        try:
+            webagent.visit(Agent._base_config['Agent']['first_shot_url'])
+            sleep(0.5)# sleep 0.5 seconds
+            return True
+        except Exception as e:
+            return False
+    @classmethod
+    def set_proxy(cls,enabled:bool,ip:str=None,port:int=None)->None:
+        cls._base_config['proxy']['enabled']=enabled
+        if enabled:
+            cls._base_config['proxy']['ip']=ip
+            cls._base_config['proxy']['port']=port
+    @classmethod
+    def get_proxy(cls)->dict:
+        return cls._base_config['proxy']
+    @classmethod
+    def set_useragent(cls,user_agent:dict)->None:
+        cls._base_config['user_agent']=user_agent
+    @classmethod
+    def set_useragent(cls,enabled,engine:str=None,os:str =None,Webkit:str =None,browser:str =None)->None:
+        '''
+        :param enabled:
+        :param engine:
+        :param os:
+        :param Webkit:
+        :param browser:
+        :return: None
+        We use user-agent like this:
+            'engine':"Mozilla/5.0",
+            "os":"(Windows NT 10.0; Win64; x64)",
+            "Webkit":"AppleWebKit/537.36",
+            "KHTML":"(KHTML, like Gecko)",
+            "browser":"Chrome/120.0.6099.227 Safari/537.36"
+        '''
+        cls._base_config['user_agent']['enabled']=enabled
+        cls._base_config['user_agent']['engine']=engine if engine !=None else cls._base_config['user_agent']['engine']
+        cls._base_config['user_agent']['os']=os if os !=None else cls._base_config['user_agent']['os']
+        cls._base_config['user_agent']['Webkit']=Webkit if Webkit!=None else cls._base_config['user_agent']['Webkit']
+        cls._base_config['user_agent']['browser']=browser if browser !=None else cls._base_config['user_agent']['browser']
+    @classmethod
+    def get_useragent(cls)->dict:
+        return cls._base_config['user_agent']
+    @classmethod
+    def set_options(cls,options:list):
         pass
-    def solve_captcha(self)->None:
+    @classmethod
+    def flush(cls)->None:
+        '''
+        :return: None
+
+        This function is used to restore the default settings
+        '''
+        cls._option = None
+        cls._browser_instance_type = None  # The used browser now
+        cls._base_config = {
+            "browser": {
+                "enabled": True
+            },
+            "proxy": {
+                "enabled": False,
+                "ip": None,
+                "port": None
+            },
+            "user_agent": {
+                "enabled": False,
+                'engine': "Mozilla/5.0",
+                "os": "(Windows NT 10.0; Win64; x64)",
+                "Webkit": "AppleWebKit/537.36",
+                "KHTML": "(KHTML, like Gecko)",
+                "browser": "Chrome/120.0.6099.227 Safari/537.36"
+            },
+            "others": {
+
+            },
+            "Agent": {
+                "first_shot_url": 'https://www.baidu.com',
+                "timeout": 10,  # 10 seconds
+                "first_shot_max_time": 3
+            }
+        }
+
+
+
+
+    ##################################################
+    # def __init__(self,config:Config) -> None:
+    #     pass
+    def __init(self)->None:
         pass
-    def html(self) -> str:
-        return self.driver.page_source
-
-    def close(self) -> None:
-        self.driver.close()
-
-    def quit(self) -> None:
-        self.driver.quit()
-
-    def quick_type(self, xpath: str, content: str) -> None:
-        element = self.driver.find_element(By.XPATH, xpath)
-        element.send_keys(content)
-
-    def humanoid_type(self, xpath: str, content: str) -> None:
-        self.scroll_to(xpath)
-        element = self.driver.find_element(By.XPATH, xpath)
-        for c in content:
-            self.random_delay(0.1, 1)
-            element.send_keys(c)
-
-    def click(self, xpath: str) -> None:
-        element = self.driver.find_element(By.XPATH, xpath)
-        element.click()
-
-    def enter(self) -> None:
-        action = ActionChains(self.driver)
-        action.send_keys(Keys.ENTER)
-        action.perform()
-
-    def scroll_to(self, xpath: str) -> None:
-        element = self.driver.find_element(By.XPATH, xpath)
-        self.driver.execute_script("arguments[0].scrollIntoView();", element)
-
-    def delay(self, secs: float) -> None:
-        sleep(secs)
-
-    def random_delay(self, min_secs: float, max_secs: float) -> None:
-        self.delay(secs=random.uniform(min_secs, max_secs))
-
     def diff_html(self, before: str, after: str) -> str:
         return HtmlDiff().make_file(before.splitlines(), after.splitlines(), context=True)
 
-    def check_captcha(self, html: str) -> None:
+    def check_msg(self, html: str) -> str:
         # check if there is captcha or not and return the type of the captcha
-        pass
+        captcha_type={"string","sliding","rotating","find"}
+        current_time=datetime.now()
+        screenshot_name="screenshot_"+self.driver.title+current_time+".png"
+        self.driver.save_screenshot(screenshot_name)
+        screenshot_base64=encode_image(screenshot_name)
+        os.remove(screenshot_name)
 
+        pass
+    def solve_cpatcha(self,html:str)->str:
+
+        pass
     def detect_fatal_msg(self, diff: str) -> Optional[str]:
         soup = BeautifulSoup(diff, "html.parser")
 
@@ -126,19 +247,17 @@ class Agent:
         else:
             print(response)
             return None
+    def perform(self, config: Config,driver):
 
-    def perform(self, config: Config):
-
-        preactions: Dict[str, Dict[str, Any]] = config.data['preactions']
-        print(preactions)
+        actions: Dict[str, Dict[str, Any]] = config.data['actions']
+        print(actions)
         # sort preactions
-        preactions = sorted(preactions.items(), key=lambda x: x[1]['seq'])
+        actions = sorted(actions.items(), key=lambda x: x[1]['seq'])
 
         username_xpath = config.data['fields']['username']['xpath']
         username_file = config.data['fields']['username']['file']
         password_xpath = config.data['fields']['password']['xpath']
         password_file = config.data['fields']['password']['file']
-
         usernames = []
         passwords = []
 
@@ -149,45 +268,55 @@ class Agent:
             passwords = f.read().splitlines()
 
         count = 0
-
         for username in usernames:
             for password in passwords:
-                self.visit(config.data['site']['url'])
-                for name, preaction in preactions:
-                    xpath = preaction['xpath']
-                    action = preaction['action']
-                    if action == 'click':
-                        self.random_delay(1, 2)
-                        self.click(xpath)
-
-                    else:
-                        print("Unknown action:", action)
-
-                self.random_delay(1, 2)
-                self.humanoid_type(username_xpath, username)
-                self.random_delay(1, 2)
-                self.humanoid_type(password_xpath, password)
-
-                html_before = self.html()
-
-                # simplest
-                self.enter()
+                driver.visit(config.data['site']['url'])
+                for name, action in actions:
+                    print("Processing:",name)
+                    xpath = action['xpath']
+                    act = action['action']
+                    if act == 'click':
+                        driver.random_delay(1, 2)
+                        driver.click(xpath)
+                        continue
+                    if act== 'type':
+                        driver.random_delay(1,2)
+                        if action['form']=="id":
+                            driver.humanoid_type(xpath,username)
+                            continue
+                        if action['form']=="pw":
+                            driver.humanoid_type(xpath,password)
+                            continue
+                    if act=='detect':
+                        #Here is for detect some captcha information
+                        now_html=driver.html()
+                        self.detect_fatal_msg(now_html)
+                        continue
+                    if act=='check':
+                        #Here is for check if there is some warnings or not
+                        driver.detect_fatal_msg()
+                        continue
+                    if act =='press':
+                        #Here is for press certain key such as Enter
+                        continue
+                    print("Unknown action:", action)
+                html_before = driver.html()
+                # simplest login by enter
+                driver.enter()
                 #Here is for solving the  captcha
-                self.delay(10)
-                html_after = self.html()
-
-                diff = self.diff_html(html_before, html_after)
+                driver.delay(10)
+                html_after = driver.html()
+                diff = driver.diff_html(html_before, html_after)
                 with open('dif.html','w',encoding='utf-8') as f:
                     f.write(diff)
                 fatal_msg = self.detect_fatal_msg(diff)
                 count += 1
-
                 with open("diff.html", "w") as f:
                     f.write(diff)
-
                 if fatal_msg:
                     print(f"[!]login count: {count}, fatal_msg: {fatal_msg}")
                     break
                 else:
                     print(
                         f"[!]login count: {count}, failed to detect fatal msg.")
+
